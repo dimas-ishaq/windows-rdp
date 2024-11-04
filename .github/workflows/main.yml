@@ -46,6 +46,26 @@ jobs:
           New-NetFirewallRule -Name "RDP" -DisplayName "Remote Desktop Protocol" -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 3389
         shell: pwsh
 
+      - name: Set RDP User Password
+        env:
+          RDP_USERNAME: ${{ secrets.RDP_USERNAME }}  # Username untuk RDP
+          RDP_PASSWORD: ${{ secrets.RDP_PASSWORD }}  # Password untuk RDP
+        run: |
+          $username = $env:RDP_USERNAME
+          $password = $env:RDP_PASSWORD
+          $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
+
+          # Membuat pengguna baru jika belum ada
+          if (-not (Get-LocalUser -Name $username -ErrorAction SilentlyContinue)) {
+              New-LocalUser -Name $username -Password $securePassword -FullName "$username" -Description "User for RDP access" -PasswordNeverExpires $true
+              # Menambahkan pengguna baru ke grup Remote Desktop Users
+              Add-LocalGroupMember -Group "Remote Desktop Users" -Member $username
+          } else {
+              Write-Host "User $username already exists. Setting password."
+              Set-LocalUser -Name $username -Password $securePassword
+          }
+        shell: pwsh
+
       - name: Get Hostname and ZeroTier IP Address
         run: |
           # Mendapatkan hostname
