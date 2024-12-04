@@ -1,13 +1,13 @@
 name: Setup RDP on Windows with ZeroTier
 
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 */6 * * *'  # Menjalankan setiap 6 jam
+# on:
+#   workflow_dispatch:
+#   schedule:
+#     - cron: '0 */6 * * *'  # Menjalankan setiap 6 jam
 
-jobs:
-  setup_rdp:
-    runs-on: windows-latest
+# jobs:
+#   setup_rdp:
+#     runs-on: windows-latest
 
     steps:
       - name: Checkout repository
